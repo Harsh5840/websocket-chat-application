@@ -1,18 +1,22 @@
-import { WebSocketServer } from "ws";
+import { WebSocket, WebSocketServer } from "ws";
  
-const wss = new WebSocketServer ({port: 5000});
+const wss = new WebSocketServer ({port: 6000});
 
 let userCount = 0;
+let allSockets:WebSocket[] = [];
 
 wss.on("connection",(socket) => {
-
+    allSockets.push(socket);
     userCount += 1;
     console.log("user connected #" + userCount);
 
     socket.on("message" , (message) =>{
             console.log("message received" + message.toString())
-            setTimeout(()=>{
-                socket.send(message.toString()) + ":sent from server"
-            } , 1000);
+            for (let i =0; i <allSockets.length;i++) {
+                    const s = allSockets[i];
+            s.send(message.toString() + ":sent from server");
+            }
+            
     })
+    
 }) 
